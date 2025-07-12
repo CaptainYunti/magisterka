@@ -15,12 +15,12 @@ paths = [
     "./music/03 What Do You Do For Money Honey.mp3","./music/04 Given the Dog a Bone.mp3",
     "./music/05 Let Me Put My Love Into You.mp3", "./music/06 Back in Black.mp3",
     "./music/07 You Shook Me All Night Long.mp3", "./music/08 Have a Drink on Me.mp3",
-    "./music/09 Shake a Leg.mp3", "./music/10 Rock and Roll Ain't Noise Pollution",
+    "./music/09 Shake a Leg.mp3", "./music/10 Rock and Roll Ain't Noise Pollution.mp3",
         ]
 drifts_long = [
     (
-        (0, 20, 57, 78, 87, 95, 122, 140, 148, 167, 184, 202, 211, 246, 282, 294),
-        ("bells", "intro", "fast-intro", "pre-verse 1", "verse 1", "verse-fast 1" "chorus",
+        (0, 20, 57, 78, 87, 105, 122, 141, 149, 168, 185, 202, 211, 247, 282, 294),
+        ("bells", "intro", "fast-intro", "pre-verse 1", "verse 1", "verse-fast 1", "chorus",
        "pre-verse 2", "verse 2", "verse-fast 2", "chorus", "interlude", "solo", "chorus", "outro", "outro-slow")
     ),
     (
@@ -29,11 +29,11 @@ drifts_long = [
           "pre-chorus", "pre-chorus scream", "chorus", "post-chorus", "solo 1", "solo 2", "chorus", "interlude", "interlude-vocal", "outro", "slowdown")
     ),
     (
-        (0, 16, 23, 46, 55, 71, 78, 100, 110, 125, 133, 172, 200),
+        (0, 16, 23, 46, 56, 71, 78, 100, 110, 125, 133, 172, 200),
         ("intro", "intro 2", "verse", "pre-chorus", "chorus", "fill", "verse", "pre-chorus", "chorus", "bridge", "solo", "chorus", "ending")
     ),
     (
-        (0, 15, 23, 44, 55, 70, 77, 92, 103, 118, 153, 168, 197),
+        (0, 15, 22, 44, 55, 69, 76, 91, 102, 116, 152, 167, 192),
         ("intro", "pre-verse", "verse 1", "pre-chorus", "chorus", "solo 1", "verse 2", "pre-chorus", "chorus", "solo 2", "verse 3", "chorus", "outro")
     ),
     (
@@ -71,7 +71,7 @@ drifts_long = [
 
 drifts_short = [
     (
-        (0, 87, 122, 140, 149, 184, 200, 245, 282),
+        (0, 87, 122, 140, 149, 184, 200, 247, 282),
         (0, 1, 2, 0, 1, 2, 0, 2, 3)
     ),
     (
@@ -79,11 +79,11 @@ drifts_short = [
         (0, 1, 2, 1, 2, 0, 2, 3)
     ),
     (
-        (0, 23, 55, 71, 78, 110, 125, 132, 172, 200),
+        (0, 23, 56, 71, 78, 110, 125, 132, 172, 200),
         (0, 1, 2, 0, 1, 2, 3, 0, 2, 3)
     ),
     (
-        (0, 23, 44, 70, 77, 92, 117, 153, 168, 193),
+        (0, 22, 44, 69, 76, 91, 116, 152, 167, 192),
         (0, 1, 2, 0, 1, 2, 0, 1, 2, 3)
     ),
     (
