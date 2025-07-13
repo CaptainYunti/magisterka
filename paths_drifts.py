@@ -120,4 +120,6 @@ titles = [
 
 album = [{"title" : titles[i], "path" : paths[i], "drift" : drifts_long[i]} for i in range(len(titles))]
 
+album_short = [{"title" : titles[i], "path" : paths[i], "drift" : drifts_short[i]} for i in range(len(titles))]
+
 

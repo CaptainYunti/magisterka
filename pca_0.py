@@ -51,7 +51,9 @@ for song in album:
         scaler = StandardScaler()
         pca_mfcc_signal = pca.fit_transform(scaler.fit_transform(mfcc_features)).flatten()
 
-        all_detectors = [detectors.ADWIN, detectors.STEPD, detectors.HDDMAverage]
+        # all_detectors = [detectors.ADWIN, detectors.STEPD, detectors.HDDMAverage]
+        all_detectors = [detectors.DDM]
+        
 
         for detector in all_detectors:
 

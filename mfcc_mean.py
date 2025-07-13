@@ -48,7 +48,8 @@ for song in album:
         mfcc_features = np.array(mfcc_features)
 
 
-        all_detectors = [detectors.ADWIN, detectors.STEPD, detectors.HDDMAverage]
+        # all_detectors = [detectors.ADWIN, detectors.STEPD, detectors.HDDMAverage]
+        all_detectors = [detectors.DDM]
 
         for detector in all_detectors:
 
