@@ -17,16 +17,17 @@ def train(dataloader: DataLoader, model: nn.Module, loss_fn, optimizer, epoch, d
         optimizer.step()
         optimizer.zero_grad()
 
-        if batch % 100 == 0:
+        if batch % 1000 == 0:
             loss, current = loss.item(), (batch+1) * len(X)
             print(f"loss: {loss:>7f} [{current:>5d}/{size:>5d}]")
 
-            visualizer.writer.add_scalar(f"training loss {model.__class__.__name__}", loss, epoch * len(dataloader) + batch)
-            visualizer.writer.add_figure("Predictions vs. actuals", visualizer.plot_classes_preds(model, X, y),
-                                         global_step=epoch * len(dataloader) + batch)
+            # visualizer.writer.add_scalar(f"training loss {model.__class__.__name__}", loss, epoch * len(dataloader) + batch)
+            # visualizer.writer.add_figure("Predictions vs. actuals", visualizer.plot_classes_preds(model, X, y),
+            #                              global_step=epoch * len(dataloader) + batch)
 
 
 def test(dataloader: DataLoader, model: nn.Module, loss_fn, epoch, device="cpu"):
+    class_predictions = []
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
     model.eval()
@@ -39,12 +40,14 @@ def test(dataloader: DataLoader, model: nn.Module, loss_fn, epoch, device="cpu")
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
+            class_predictions = class_predictions + pred.argmax(1).tolist()
 
     test_loss /= num_batches
     correct /= size
 
     print(f"Test Error: \n Accuracy: {100*correct:>0.2f}%, AVG loss: {test_loss:>8f} \n")
-    visualizer.writer.add_scalar(f"test accuracy {model.__class__.__name__}", correct*100, epoch+1)
+    
+    # visualizer.writer.add_scalar(f"test accuracy {model.__class__.__name__}", correct*100, epoch+1)
 
-    return correct, test_loss
+    return correct, test_loss, class_predictions
 
