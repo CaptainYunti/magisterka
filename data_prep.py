@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import os
 import capymoa.drift.detectors as detectors
+from scipy.stats import mode
 
 drift_dict = {
     0: "other",
@@ -18,7 +19,7 @@ drift_dict = {
 album = paths_drifts.album_short
 
 frame_length = 1 #seconds
-percent_to_drift = 0.9
+percent_to_drift = 0.6
 
 songs_mfcc = []
 
@@ -114,39 +115,54 @@ def data_visualization(song_number: int, predictions: list, detector: str):
         mfcc = librosa.feature.mfcc(y=frame, sr=sr, n_mfcc=13)
         mfcc_features.append(mfcc.mean(axis=1))
             
-
-    mfcc_features = np.array(mfcc_features)
-
     time_axis = np.arange(len(mfcc_features)) * frame_length
     feature_vals = [x.mean() for x in mfcc_features]
 
     change_points = []
 
-    window = []
-    max_window_length = 10
-    window_length = 0
+    # window = []
+    # max_window_length = 10
+    # window_length = 0
+    # for indx, frame in enumerate(np.array_split(predictions, num_frames)):
+    #     frame = frame.tolist()
+    #     window += frame
+    #     window_length = window_length + 1
+    #     if (max(window.count(0), window.count(1), window.count(2), window.count(3)) / len(window)) < percent_to_drift:
+    #         change_points.append(indx)
+    #         window = []
+    #         window_length = 0
+    #     else:
+    #         if window_length == max_window_length:
+    #             window = window[len(window)//max_window_length:]
+    #             window_length = max_window_length-1
+
+
+    detection_delay = False
     for indx, frame in enumerate(np.array_split(predictions, num_frames)):
         frame = frame.tolist()
-        window += frame
-        window_length = window_length + 1
-        if (max(window.count(0), window.count(1), window.count(2), window.count(3)) / len(window)) < percent_to_drift:
-            change_points.append(indx)
-            window = []
-            window_length = 0
-        else:
-            if window_length == max_window_length:
-                window = window[len(window)//max_window_length:]
-                window_length = max_window_length-1
+        if (max(frame.count(0), frame.count(1), frame.count(2), frame.count(3)) / len(frame)) < percent_to_drift:
+            if detection_delay == False:
+                change_points.append(indx)
+            detection_delay = True
 
+        else:
+            detection_delay = False
+            
 
 
     # for indx, frame in enumerate(np.array_split(predictions, num_frames)):
-    #     frame = frame.tolist()
-    #     for element in frame:
-    #         drift_detector.add_element(element)
+    #     drift_detector.add_element(mode(frame)[0])
 
     #     if drift_detector.detected_change():
-    #         change_points.append(i)
+    #         change_points.append(indx)
+
+
+    # for indx, frame in enumerate(np.array_split(predictions, num_frames)):
+    #     for i in frame:
+    #         drift_detector.add_element(i)
+
+    #     if drift_detector.detected_change():
+    #         change_points.append(indx)
 
 
     plt.figure(figsize=(12,5))
@@ -155,17 +171,18 @@ def data_visualization(song_number: int, predictions: list, detector: str):
 
     for cp in change_points:
         plt.axvline(cp * frame_length, color="red", linestyle="--", label="Wykryty dryf" if cp == change_points[0] else "")
-    for indx, t in enumerate(song["drift"][0]):
+    for indx, t in enumerate(album[song_number]["drift"][0]):
         plt.axvline(t, color = "green", linestyle="--", label="Zmiana" if indx == 0 else "")
         ymin, ymax = plt.ylim()
-        plt.text(t + .1, ymin + 10, drift_dict[song["drift"][1][indx]],rotation=90, color="green")
+        plt.text(t + .1, ymin + 10, drift_dict[album[song_number]["drift"][1][indx]],rotation=90, color="green")
     plt.xlabel("Czas [s]")
     plt.ylabel("Średnia MFCC")
-    # plt.title(f"Wykrywanie segmentów utworu {song["title"]}, okno: {frame_length} s, MLP: {detector}, detector: {drift_detector_name}")
-    plt.title(f"Wykrywanie segmentów utworu {song["title"]}, okno: {frame_length} s, MLP: {detector}")
+    # plt.title(f"Wykrywanie segmentów utworu {album[song_number]["title"]}, okno: {frame_length} s, MLP: {detector}, detector: {drift_detector_name}")
+    plt.title(f"Wykrywanie segmentów utworu {album[song_number]["title"]}, okno: {frame_length} s, MLP: {detector}")
     plt.legend()
     plt.grid()
     directory = f"./plots/MLP/{detector}/"
     if not os.path.isdir(directory):
         os.makedirs(directory)
     plt.savefig(f"{directory}/{album[song_number]["title"]}_MLP_{detector}.png")
+    print(f"{album[song_number]["title"]}")

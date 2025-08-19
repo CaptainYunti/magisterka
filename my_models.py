@@ -9,8 +9,10 @@ class GeluNet(nn.Module):
         self.training_stack = nn.Sequential(
             nn.Linear(13,1024),
             nn.GELU(),
+            nn.Dropout(0.1),
             nn.Linear(1024,1024),
             nn.GELU(),
+            nn.Dropout(0.1),
             nn.Linear(1024,128),
             nn.GELU(),
             nn.Linear(128,4)
@@ -26,8 +28,10 @@ class ReluNet(nn.Module):
         self.training_stack = nn.Sequential(
             nn.Linear(13,1024),
             nn.ReLU(),
+            nn.Dropout(0.1),
             nn.Linear(1024,1024),
             nn.ReLU(),
+            nn.Dropout(0.1),
             nn.Linear(1024,128),
             nn.ReLU(),
             nn.Linear(128,4)
@@ -43,8 +47,10 @@ class Relu6Net(nn.Module):
         self.training_stack = nn.Sequential(
             nn.Linear(13,1024),
             nn.ReLU6(),
+            nn.Dropout(0.1),
             nn.Linear(1024,1024),
             nn.ReLU6(),
+            nn.Dropout(0.1),
             nn.Linear(1024,128),
             nn.ReLU6(),
             nn.Linear(128,4)
@@ -62,10 +68,13 @@ class GeluBiggerNet(nn.Module):
         self.training_stack = nn.Sequential(
             nn.Linear(13,1024),
             nn.GELU(),
+            nn.Dropout(0.1),
             nn.Linear(1024,2048),
             nn.GELU(),
+            nn.Dropout(0.2),
             nn.Linear(2048,1024),
             nn.GELU(),
+            nn.Dropout(0.1),
             nn.Linear(1024,128),
             nn.GELU(),
             nn.Linear(128,4)
@@ -81,10 +90,13 @@ class ReluBiggerNet(nn.Module):
         self.training_stack = nn.Sequential(
             nn.Linear(13,1024),
             nn.ReLU(),
+            nn.Dropout(0.1),
             nn.Linear(1024,2048),
             nn.ReLU(),
+            nn.Dropout(0.2),
             nn.Linear(2048,1024),
             nn.ReLU(),
+            nn.Dropout(0.1),
             nn.Linear(1024,128),
             nn.ReLU(),
             nn.Linear(128,4)
@@ -100,13 +112,75 @@ class Relu6BiggerNet(nn.Module):
         self.training_stack = nn.Sequential(
             nn.Linear(13,1024),
             nn.ReLU6(),
+            nn.Dropout(0.1),
             nn.Linear(1024,2048),
             nn.ReLU6(),
+            nn.Dropout(0.2),
             nn.Linear(2048,1024),
             nn.ReLU6(),
+            nn.Dropout(0.1),
             nn.Linear(1024,128),
             nn.ReLU6(),
             nn.Linear(128,4)
+        )
+
+    def forward(self, x):
+        return self.training_stack(x)
+    
+
+
+
+class GeluSmallerNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.training_stack = nn.Sequential(
+            nn.Linear(13,128),
+            nn.GELU(),
+            nn.Dropout(0.1),
+            nn.Linear(128,128),
+            nn.GELU(),
+            nn.Dropout(0.1),
+            nn.Linear(128,64),
+            nn.GELU(),
+            nn.Linear(64,4)
+        )
+
+    def forward(self, x):
+        return self.training_stack(x)
+    
+
+class ReluSmallerNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.training_stack = nn.Sequential(
+            nn.Linear(13,128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+            nn.Linear(128,128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+            nn.Linear(128,64),
+            nn.ReLU(),
+            nn.Linear(64,4)
+        )
+
+    def forward(self, x):
+        return self.training_stack(x)
+    
+
+class Relu6SmallerNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.training_stack = nn.Sequential(
+            nn.Linear(13,128),
+            nn.ReLU6(),
+            nn.Dropout(0.1),
+            nn.Linear(128,128),
+            nn.ReLU6(),
+            nn.Dropout(0.1),
+            nn.Linear(128,64),
+            nn.ReLU6(),
+            nn.Linear(64,4)
         )
 
     def forward(self, x):

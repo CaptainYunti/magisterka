@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from torch import nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
+import copy
 
 import my_models
 import data_prep
@@ -18,8 +19,8 @@ device = (
 
 print(f"Device: {device}")
 
-BATCH = 1024
-EPOCHS = 1
+BATCH = 2048
+EPOCHS = 100
 
 sr = 44100
 
@@ -40,16 +41,27 @@ fourth_model = my_models.ReluBiggerNet().to(device) # 1024, 2048, 1024, 128
 fifth_model = my_models.Relu6BiggerNet().to(device) # 1024, 2048, 1024, 128
 sixth_model = my_models.GeluBiggerNet().to(device) # 1024, 2048, 1024, 128
 
-models = [first_model, second_model, third_model, fourth_model, fifth_model, sixth_model]
+seventh_model = my_models.ReluSmallerNet().to(device) # 128, 128, 64
+eighth_model = my_models.Relu6SmallerNet().to(device) # 128, 128, 64
+ninth_model = my_models.GeluSmallerNet().to(device) # 128, 128, 64
+
+models = [first_model, second_model, third_model, fourth_model, fifth_model, sixth_model, seventh_model, eighth_model, ninth_model]
+copy_models = copy.deepcopy(models)
 
 loss = nn.CrossEntropyLoss()
-optimizers_sgd = [optim.SGD(model.parameters(), lr=0.0001, momentum=0.9) for model in models]
-optimizers_adam = [optim.Adam(model.parameters(), lr=1e-4) for model in models]
+# optimizers_sgd = [optim.SGD(model.parameters(), lr=0.0001, momentum=0.9) for model in models]
+# optimizers_adam = [optim.Adam(model.parameters(), lr=1e-4) for model in models]
 
 
-mlp_names = ["SGD-ReLU", "SGD-ReLU6", "SGD-GELU", "SGD-ReLU-Bigger", "SGD-ReLU6-Bigger", "SGD-GELU-Bigger",
-              "Adam-ReLU", "Adam-ReLU6", "Adam-GELU", "Adam-ReLU-Bigger", "Adam-ReLU6-Bigger", "Adam-GELU-Bigger",
-              "ReLU-untrained", "ReLU6-untrained", "GELU-untrained"]
+mlp_names = ["SGD-ReLU", "SGD-ReLU6", "SGD-GELU",
+              "SGD-ReLU-Bigger", "SGD-ReLU6-Bigger", "SGD-GELU-Bigger",
+              "SGD-ReLU-Smaller", "SGD-ReLU6-Smaller", "SGD-GELU-Smaller",
+              "Adam-ReLU", "Adam-ReLU6", "Adam-GELU",
+              "Adam-ReLU-Bigger", "Adam-ReLU6-Bigger", "Adam-GELU-Bigger",
+              "Adam-ReLU-Smaller", "Adam-ReLU6-Smaller", "Adam-GELU-Smaller",
+              "ReLU-untrained", "ReLU6-untrained", "GELU-untrained",
+              "ReLU-Bigger-untrained", "ReLU6-Bigger-untrained", "GELU-Bigger-untrained",
+              "ReLU-Smaller-untrained", "ReLU6-Smaller-untrained", "GELU-Smaller-untrained"]
 
 
 for track_number in range(max_track_number+1):
@@ -59,52 +71,50 @@ for track_number in range(max_track_number+1):
     train_loader = DataLoader(train_data, batch_size=BATCH, shuffle=False)
     test_loader = DataLoader(test_data, batch_size=BATCH, shuffle=False)
 
+    models = copy.deepcopy(copy_models)
+    optimizers_sgd = [optim.SGD(model.parameters(), lr=0.0001, momentum=0.9) for model in models]
 
     for model_index, model in enumerate(models):
-
         optimizer = optimizers_sgd[model_index]
         print(f"Model: {print(model)}\n\n")
-        train(train_loader, model, loss, optimizer, 1, device)
-        test_result = test(test_loader, first_model, loss, 1, device)[2]
+
+        for epoch in range(EPOCHS):
+            train(train_loader, model, loss, optimizer, epoch, device)
+
+        test_result = test(test_loader, model, loss, 1, device)[2]
 
         print("Done!")
 
         data_prep.data_visualization(track_number, test_result, mlp_names[model_index])
         torch.save(model.state_dict(), f"./models/{mlp_names[model_index]}_{track_number}.pth")
 
+    models = copy.deepcopy(copy_models)
+    optimizers_adam = [optim.Adam(model.parameters(), lr=1e-4) for model in models]
 
+    for model_index, model in enumerate(models):
         optimizer = optimizers_adam[model_index]
         print(f"Model: {print(model)}\n\n")
-        train(train_loader, model, loss, optimizer, 1, device)
-        test_result = test(test_loader, first_model, loss, 1, device)[2]
+
+        for epoch in range(EPOCHS):
+            train(train_loader, model, loss, optimizer, epoch, device)
+        test_result = test(test_loader, model, loss, 1, device)[2]
 
         print("Done!")
 
-        data_prep.data_visualization(track_number, test_result, mlp_names[model_index+6])
-        torch.save(model.state_dict(), f"./models/{mlp_names[model_index+3]}_{track_number}.pth")
+        data_prep.data_visualization(track_number, test_result, mlp_names[model_index+18])
+        torch.save(model.state_dict(), f"./models/{mlp_names[model_index+18]}_{track_number}.pth")
 
 
+    models = copy.deepcopy(copy_models)
 
+    for model_index, model in enumerate(models):
 
-print(f"Model: {print(model)}\n\n")
-test_result = test(test_loader, first_model, loss, 1, device)[2]
-print("Done!")
-data_prep.data_visualization(track_number, test_result, mlp_names[-1])
-torch.save(model.state_dict(), f"./models/{mlp_names[model_index-1]}_{track_number}.pth")
+        print(f"Model: {print(model)}\n\n")
+        test_result = test(test_loader, model, loss, 1, device)[2]
 
+        print("Done!")
 
-print(f"Model: {print(model)}\n\n")
-test_result = test(test_loader, second_model, loss, 1, device)[2]
-print("Done!")
-data_prep.data_visualization(track_number, test_result, mlp_names[-2])
-torch.save(model.state_dict(), f"./models/{mlp_names[model_index-2]}_{track_number}.pth")
-
-
-print(f"Model: {print(model)}\n\n")
-test_result = test(test_loader, third_model, loss, 1, device)[2]
-print("Done!")
-data_prep.data_visualization(track_number, test_result, mlp_names[-3])
-torch.save(model.state_dict(), f"./models/{mlp_names[model_index-3]}_{track_number}.pth")
+        data_prep.data_visualization(track_number, test_result, mlp_names[model_index+9])
 
 
 

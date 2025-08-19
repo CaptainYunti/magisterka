@@ -19,7 +19,8 @@ def train(dataloader: DataLoader, model: nn.Module, loss_fn, optimizer, epoch, d
 
         if batch % 1000 == 0:
             loss, current = loss.item(), (batch+1) * len(X)
-            print(f"loss: {loss:>7f} [{current:>5d}/{size:>5d}]")
+            print(f"Epoch: {epoch+1}")
+            # print(f"loss: {loss:>7f} [{current:>5d}/{size:>5d}]")
 
             # visualizer.writer.add_scalar(f"training loss {model.__class__.__name__}", loss, epoch * len(dataloader) + batch)
             # visualizer.writer.add_figure("Predictions vs. actuals", visualizer.plot_classes_preds(model, X, y),
